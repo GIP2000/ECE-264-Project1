@@ -26,15 +26,15 @@ class SimpleList{
             bool getNonDeletable(); 
              
     };
-    protected: 
+    protected:
+        Node *topNode; 
+        Node *botNode;
+        string name; 
         SimpleList(string name);
         void insertAtTop(T value);
         void insertAtBot(T value); 
         optional<T> removeAtTop(); 
     public: 
-        Node *topNode; 
-        Node *botNode;
-        string name;
         T getTop();
         virtual void push(T value){}
         virtual optional<T> pop(){} 
@@ -212,7 +212,7 @@ void pop(string name, string cmd, list<SimpleList<int>*>* intList, list<SimpleLi
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         optional<int> val = (*(dataStructureOp.value())).pop();
         if (!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr); 
-            return addLineToFile("Value popped: " + to_string(val.value()),outputFilePtr);
+        return addLineToFile("Value popped: " + to_string(val.value()),outputFilePtr);
     } else if(type == 'd'){
         optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleList);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
@@ -255,13 +255,11 @@ int main (){
     list<SimpleList<int> *> intList; 
     list<SimpleList<double> *> doubleList;  
     list<SimpleList<string> *> stringList; 
-    
+
     if (inputFile.is_open()){
         string cmd; 
         while(getline(inputFile,cmd))
             processCommand(cmd,&intList,&doubleList,&stringList,&outputFile);
     }
-
-
     return 0; 
 }
