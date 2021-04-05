@@ -255,9 +255,15 @@ void processCommand(string cmd, list<SimpleList<int>*>* intList,list<SimpleList<
 
 
 int main (){
+    string inputFileName; 
+    string outputFileName;
+    cout << "What is the input file?\n"; 
+    cin >> inputFileName; 
+    cout << "what is the output file?\n"; 
+    cin >> outputFileName; 
 
-    ifstream inputFile("input.txt"); 
-    ofstream outputFile ("output.txt");
+    ifstream inputFile(inputFileName); 
+    ofstream outputFile (outputFileName);
     list<SimpleList<int> *> intList; 
     list<SimpleList<double> *> doubleList;  
     list<SimpleList<string> *> stringList; 
