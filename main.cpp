@@ -196,15 +196,15 @@ void push(string name, string value, string cmd, list<SimpleList<int>*>* intList
     if(type == 'i'){
         optional<SimpleList<int>*> dataStructureOp = searchAList<int>(name,*intListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        (*(dataStructureOp.value())).push(stoi(value));
+        dataStructureOp.value()->push(stoi(value));
     } else if(type == 'd'){
         optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        (*(dataStructureOp.value())).push(stod(value));
+        dataStructureOp.value()->push(stod(value));
     } else if(type == 's'){
         optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        (*(dataStructureOp.value())).push(value);
+        dataStructureOp.value()->push(value);
     } else 
         return addLineToFile("Invalid command",outputFilePtr);
     
@@ -216,13 +216,13 @@ void pop(string name, string cmd, list<SimpleList<int>*>* intListPtr, list<Simpl
     if(type == 'i'){
         optional<SimpleList<int>*> dataStructureOp = (searchAList<int>(name,*intListPtr));
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        optional<int> val = (*(dataStructureOp.value())).pop();
+        optional<int> val = dataStructureOp.value()->pop();
         if (!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr); 
         return addLineToFile("Value popped: " + to_string(val.value()),outputFilePtr);
     } else if(type == 'd'){
         optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        optional<double> val = (*(dataStructureOp.value())).pop();
+        optional<double> val = dataStructureOp.value()->pop();
         if(!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr);  
         string doubleAsString = to_string(val.value()).erase(to_string(val.value()).find_last_not_of('0') + 1, string::npos);
         doubleAsString = doubleAsString.erase(doubleAsString.find_last_not_of('.') + 1, string::npos); 
@@ -230,7 +230,7 @@ void pop(string name, string cmd, list<SimpleList<int>*>* intListPtr, list<Simpl
     } else if(type == 's'){
         optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
-        optional<string> val = (*(dataStructureOp.value())).pop();
+        optional<string> val = dataStructureOp.value()->pop();
         if(!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr);
         return addLineToFile("Value popped: " + val.value(),outputFilePtr); 
     } else 
