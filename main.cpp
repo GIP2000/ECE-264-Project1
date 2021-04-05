@@ -23,7 +23,8 @@ class SimpleList{
             Node* getNextNode();
             Node* getPreviousNode();
             T getValue(); 
-            bool getNonDeletable(); 
+            bool getNonDeletable();
+            
              
     };
     protected:
@@ -36,8 +37,9 @@ class SimpleList{
         optional<T> removeAtTop(); 
     public: 
         T getTop();
-        virtual void push(T value){}
-        virtual optional<T> pop(){} 
+        virtual void push(T value) =0; 
+        virtual optional<T> pop() =0;  
+        string getName(); 
 };
 
 template<class T> 
@@ -119,6 +121,10 @@ T SimpleList<T>::Node::getValue(){
     return this->value; 
 }
 template<class T> 
+string SimpleList<T>::getName(){
+    return this->name; 
+}
+template<class T> 
 bool SimpleList<T>::Node::getNonDeletable(){
     return this->nonDeletable; 
 }
@@ -158,7 +164,7 @@ T SimpleList<T>::getTop(){
 template<class T> 
 optional<SimpleList<T>*> searchAList(string name, list<SimpleList<T>*> lst){
     for(auto i: lst){
-        if((*i).name == name)
+        if((*i).getName() == name)
             return i;
     }
     return {}; 
