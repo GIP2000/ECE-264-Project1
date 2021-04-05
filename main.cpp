@@ -37,8 +37,8 @@ class SimpleList{
         optional<T> removeAtTop(); 
     public: 
         T getTop();
-        virtual void push(T value) =0; 
-        virtual optional<T> pop() =0;  
+        virtual void push(T value) = 0; 
+        virtual optional<T> pop() = 0;  
         string getName(); 
 };
 
@@ -82,8 +82,8 @@ SimpleList<T>::SimpleList(string name){
     this-> name = name;
     this->topNode = new Node(); 
     this->botNode = new Node(); 
-    (*(this->topNode)).setPreviousNode(botNode);
-    (*(this->botNode)).setNextNode(topNode); 
+    this->topNode->setPreviousNode(botNode); 
+    this->botNode->setNextNode(topNode); 
 
 }
 template<class T> 
@@ -131,40 +131,40 @@ bool SimpleList<T>::Node::getNonDeletable(){
 
 template<class T> 
 void SimpleList<T>::insertAtTop(T value){
-    typename SimpleList<T>::Node * newNode =  new typename SimpleList<T>::Node(value,this->topNode,(*(this->topNode)).getPreviousNode()); 
-    (*((*(this->topNode)).getPreviousNode())).setNextNode(newNode);
-    (*(this->topNode)).setPreviousNode(newNode); 
+    typename SimpleList<T>::Node * newNode =  new typename SimpleList<T>::Node(value,this->topNode,this->topNode->getPreviousNode()); 
+    this->topNode->getPreviousNode()->setNextNode(newNode); 
+    this->topNode->setPreviousNode(newNode); 
 }
 
 template<class T> 
 void SimpleList<T>::insertAtBot(T value){
-    typename SimpleList<T>::Node * newNode =  new typename SimpleList<T>::Node(value,(*(this->botNode)).getNextNode(),this->botNode); 
-    (*((*(this->botNode)).getNextNode())).setPreviousNode(newNode); 
-    (*(this->botNode)).setNextNode(newNode); 
+    typename SimpleList<T>::Node * newNode =  new typename SimpleList<T>::Node(value,this->botNode->getNextNode(),this->botNode); 
+    this->botNode->getNextNode()->setPreviousNode(newNode); 
+    this->botNode->setNextNode(newNode); 
 }
 
 template<class T> 
 optional<T> SimpleList<T>::removeAtTop(){
-    if((*(*(this->topNode)).getPreviousNode()).getNonDeletable()) return {}; 
-    typename SimpleList<T>::Node * nodeToDelete = (*(this->topNode)).getPreviousNode();
-    T value = (*(nodeToDelete)).getValue(); 
-    (*((*(nodeToDelete)).getPreviousNode())).setNextNode(this->topNode); 
-    (*(this->topNode)).setPreviousNode((*(nodeToDelete)).getPreviousNode()); 
+    if(this->topNode->getPreviousNode()->getNonDeletable()) return {}; 
+    typename SimpleList<T>::Node * nodeToDelete = this->topNode->getPreviousNode();
+    T value = nodeToDelete->getValue(); 
+    nodeToDelete->getPreviousNode()->setNextNode(this->topNode); 
+    this->topNode->setPreviousNode(nodeToDelete->getPreviousNode()); 
     delete nodeToDelete; 
     return value; 
 }
 
 template<class T> 
 T SimpleList<T>::getTop(){
-    if((*(this->topNode)).getPreviousNode() == this->botNode) return NULL; 
-    return (*((*(this->topNode)).getPreviousNode())).getValue(); 
+    if(this->topNode->getPreviousNode() == this->botNode) return NULL; 
+    return (this->topNode->getPreviousNode()->getValue()); 
 
 }
 
 template<class T> 
 optional<SimpleList<T>*> searchAList(string name, list<SimpleList<T>*> lst){
     for(auto i: lst){
-        if((*i).getName() == name)
+        if(i->getName() == name)
             return i;
     }
     return {}; 
@@ -174,35 +174,35 @@ void addLineToFile(string line,ofstream* fileStream){
     *fileStream << line << "\n"; 
 }
 
-void createList(string name,string modifier,string cmd, list<SimpleList<int>*>* intList, list<SimpleList<double>*>* doubleList, list<SimpleList<string>*>* stringList, ofstream* outputFilePtr ){
+void createList(string name,string modifier,string cmd, list<SimpleList<int>*>* intListPtr, list<SimpleList<double>*>* doubleListPtr, list<SimpleList<string>*>* stringListPtr, ofstream* outputFilePtr ){
     addLineToFile("PROCESSING COMMAND: " + cmd,outputFilePtr);
     char type = name[0]; 
     
     if(type == 'i') {
-        if(searchAList<int>(name,*intList).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
-        (*intList).push_back(modifier == "stack" ? (SimpleList<int>*)(new Stack<int>(name)): (SimpleList<int>*)(new Queue<int>(name)));
+        if(searchAList<int>(name,*intListPtr).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
+        intListPtr->push_back(modifier == "stack" ? (SimpleList<int>*)(new Stack<int>(name)): (SimpleList<int>*)(new Queue<int>(name)));
     } else if(type == 'd'){
-        if(searchAList<double>(name,*doubleList).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
-        (*doubleList).push_back(modifier == "stack" ? (SimpleList<double>*)(new Stack<double>(name)):(SimpleList<double>*)(new Queue<double>(name)));
+        if(searchAList<double>(name,*doubleListPtr).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
+        doubleListPtr->push_back(modifier == "stack" ? (SimpleList<double>*)(new Stack<double>(name)):(SimpleList<double>*)(new Queue<double>(name)));
     }else if(type == 's'){
-        if(searchAList<string>(name,*stringList).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
-        (*stringList).push_back(modifier == "stack" ? (SimpleList<string>*)(new Stack<string>(name)):(SimpleList<string>*)(new Queue<string>(name)));
+        if(searchAList<string>(name,*stringListPtr).has_value()) return addLineToFile("ERROR: This name already exists!",outputFilePtr); 
+        stringListPtr->push_back(modifier == "stack" ? (SimpleList<string>*)(new Stack<string>(name)):(SimpleList<string>*)(new Queue<string>(name)));
     }else
         return addLineToFile("Invalid command",outputFilePtr);
 }
-void push(string name, string value, string cmd, list<SimpleList<int>*>* intList, list<SimpleList<double>*>* doubleList,list<SimpleList<string>*>* stringList, ofstream* outputFilePtr  ){
+void push(string name, string value, string cmd, list<SimpleList<int>*>* intListPtr, list<SimpleList<double>*>* doubleListPtr,list<SimpleList<string>*>* stringListPtr, ofstream* outputFilePtr  ){
     addLineToFile("PROCESSING COMMAND: " + cmd,outputFilePtr);
     char type = name[0]; 
     if(type == 'i'){
-        optional<SimpleList<int>*> dataStructureOp = searchAList<int>(name,*intList);
+        optional<SimpleList<int>*> dataStructureOp = searchAList<int>(name,*intListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         (*(dataStructureOp.value())).push(stoi(value));
     } else if(type == 'd'){
-        optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleList);
+        optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         (*(dataStructureOp.value())).push(stod(value));
     } else if(type == 's'){
-        optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringList);
+        optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         (*(dataStructureOp.value())).push(value);
     } else 
@@ -210,17 +210,17 @@ void push(string name, string value, string cmd, list<SimpleList<int>*>* intList
     
 }
 
-void pop(string name, string cmd, list<SimpleList<int>*>* intList, list<SimpleList<double>*>* doubleList,list<SimpleList<string>*>* stringList, ofstream* outputFilePtr ){
+void pop(string name, string cmd, list<SimpleList<int>*>* intListPtr, list<SimpleList<double>*>* doubleListPtr,list<SimpleList<string>*>* stringListPtr, ofstream* outputFilePtr ){
     addLineToFile("PROCESSING COMMAND: " + cmd,outputFilePtr);
     char type = name[0];
     if(type == 'i'){
-        optional<SimpleList<int>*> dataStructureOp = (searchAList<int>(name,*intList));
+        optional<SimpleList<int>*> dataStructureOp = (searchAList<int>(name,*intListPtr));
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         optional<int> val = (*(dataStructureOp.value())).pop();
         if (!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr); 
         return addLineToFile("Value popped: " + to_string(val.value()),outputFilePtr);
     } else if(type == 'd'){
-        optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleList);
+        optional<SimpleList<double>*> dataStructureOp = searchAList<double>(name,*doubleListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         optional<double> val = (*(dataStructureOp.value())).pop();
         if(!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr);  
@@ -228,7 +228,7 @@ void pop(string name, string cmd, list<SimpleList<int>*>* intList, list<SimpleLi
         doubleAsString = doubleAsString.erase(doubleAsString.find_last_not_of('.') + 1, string::npos); 
         return addLineToFile("Value popped: " + doubleAsString,outputFilePtr);
     } else if(type == 's'){
-        optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringList);
+        optional<SimpleList<string>*> dataStructureOp = searchAList<string>(name,*stringListPtr);
         if(!dataStructureOp.has_value()) return addLineToFile("ERROR: This name does not exist!",outputFilePtr);
         optional<string> val = (*(dataStructureOp.value())).pop();
         if(!val.has_value()) return addLineToFile("ERROR: This list is empty!",outputFilePtr);
@@ -237,16 +237,16 @@ void pop(string name, string cmd, list<SimpleList<int>*>* intList, list<SimpleLi
         return addLineToFile("Invalid Command",outputFilePtr); 
 }
 
-void processCommand(string cmd, list<SimpleList<int>*>* intList,list<SimpleList<double>*>* doubleList, list<SimpleList<string>*>* stringList,ofstream* outputFilePtr ){
+void processCommand(string cmd, list<SimpleList<int>*>* intListPtr,list<SimpleList<double>*>* doubleListPtr, list<SimpleList<string>*>* stringListPtr,ofstream* outputFilePtr ){
       regex r("(\\w+) (\\w+) ?([\\w\\-\\.]+)?");
       smatch match;
       if(regex_match(cmd,match,r)){
           string cmdType = match[1] ;
           string name  = match[2]; 
           string modifier = match[3];
-          if(cmdType == "create") return createList(name,modifier,cmd,intList,doubleList,stringList,outputFilePtr);
-          else if(cmdType == "push") return push(name,modifier,cmd,intList,doubleList,stringList,outputFilePtr);
-          else if(cmdType == "pop") return pop(name,cmd,intList,doubleList,stringList,outputFilePtr);
+          if(cmdType == "create") return createList(name,modifier,cmd,intListPtr,doubleListPtr,stringListPtr,outputFilePtr);
+          else if(cmdType == "push") return push(name,modifier,cmd,intListPtr,doubleListPtr,stringListPtr,outputFilePtr);
+          else if(cmdType == "pop") return pop(name,cmd,intListPtr,doubleListPtr,stringListPtr,outputFilePtr);
           else return addLineToFile("Invalid Command",outputFilePtr);
       }
       return addLineToFile("Invalid Command",outputFilePtr);
