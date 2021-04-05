@@ -36,7 +36,6 @@ class SimpleList{
         void insertAtBot(T value); 
         optional<T> removeAtTop(); 
     public: 
-        T getTop();
         virtual void push(T value) = 0; 
         virtual optional<T> pop() = 0;  
         string getName(); 
@@ -152,13 +151,6 @@ optional<T> SimpleList<T>::removeAtTop(){
     this->topNode->setPreviousNode(nodeToDelete->getPreviousNode()); 
     delete nodeToDelete; 
     return value; 
-}
-
-template<class T> 
-T SimpleList<T>::getTop(){
-    if(this->topNode->getPreviousNode() == this->botNode) return NULL; 
-    return (this->topNode->getPreviousNode()->getValue()); 
-
 }
 
 template<class T> 
